@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./AddProfilePage.module.css";
 import TextInput from "../module/TextInput";
 import RadioList from "../module/RadioList";
 import TextList from "../module/TextList";
 import CustomDatePicker from "./CustomDatePicker";
+import { useRouter } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
+import Loader from "../module/Loader";
 
-function AddProfilePage() {
+function AddProfilePage({ data }) {
+  // console.log(data, "marziehhh");
   const [profileData, setProfileData] = useState({
     title: "",
     description: "",
@@ -21,7 +24,13 @@ function AddProfilePage() {
     rules: [],
     amenities: [],
   });
+  useEffect(() => {
+    if (data) {
+      setProfileData(data);
+    }
+  }, []);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const submitHandler = async (e) => {
     setLoading(true);
     const res = await fetch("/api/profile", {
@@ -37,9 +46,43 @@ function AddProfilePage() {
       toast.success(data.message);
     }
   };
+
+  // const editHandler = async () => {
+  //   const res = await fetch("/api/profile", {
+  //     method: "PATCH",
+  //     body: JSON.stringify(profileData),
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  //   const data = await res.json();
+  //   setLoading(false);
+  //   if (data.error) {
+  //     toast.error(data.error);
+  //   } else {
+  //     toast.success(data.message);
+  //     router.refresh();
+  //   }
+  // };
+
+  const editHandler = async () => {
+    setLoading(true);
+    const res = await fetch("/api/profile", {
+      method: "PATCH",
+      body: JSON.stringify(profileData),
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (data.error) {
+      toast.error(data.error);
+    } else {
+      toast.success(data.message);
+      router.refresh();
+    }
+  };
+
   return (
     <div className={styles.container}>
-      <h3>ثبت اگهی</h3>
+      <h3> {data ? "ویرایش اگهی" : "ثبت اگهی"}</h3>
       <TextInput
         title="عنوان آگهی"
         name="title"
@@ -98,10 +141,14 @@ function AddProfilePage() {
       />
       <Toaster />
       {loading ? (
-        <loading />
+        <Loader />
+      ) : data ? (
+        <button className={styles.submit} onClick={editHandler}>
+          ویرایش آگهی
+        </button>
       ) : (
         <button className={styles.submit} onClick={submitHandler}>
-          ثبت اگهی
+          ثبت آگهی
         </button>
       )}
     </div>

@@ -3,6 +3,7 @@ import styles from "./MyProfilesPage.module.css";
 import DashboardCard from "../module/DashboardCard";
 
 function MyProfilesPage({ profiles }) {
+  console.log(profiles, "proooo");
   return (
     <div>
       {profiles.length ? null : (

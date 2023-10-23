@@ -7,14 +7,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import LogoutButton from "../module/LogoutButton";
 
-async function DashboardSidebar({ children }) {
-  const session = await getServerSession(authOptions);
+async function DashboardSidebar({ children, email, role }) {
   return (
     <>
       <div className={styles.container}>
         <div className={styles.sidebar}>
           <CgProfile />
-          <p>{session?.user.email}</p>
+          {role === "ADMIN" ? "Admin" : ""}
+          <p>{email}</p>
           <Link href="/dashboard">حساب کاربری</Link>
           <Link href="/dashboard/my-profiles">آگهی های من</Link>
           <Link href="/dashboard/add">ثبت آگهی</Link>
